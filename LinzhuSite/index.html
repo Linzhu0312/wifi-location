@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width">
+                <title>JS Bin</title>
+                <script src="https://fb.me/react-with-addons-15.1.0.js"></script>
+                <script src="https://fb.me/react-dom-15.1.0.js"></script>
+                
+                <script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+                <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+                <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+                <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+                
+    </head>
+    <body>
+        <div id="ui"></div>
+        <div id="vis"></div>
+        <script type="text/babel">
+        class AppSelectingForm extends React.Component {
+        
+        // In the constructor, we initialize the state of the form and
+        // bind the functions to the created form (so that 'this' can
+        // refer to a meaningful object).
+        constructor(props) {
+        super(props);
+        this.state = {
+        platform: 'Free',
+        };
+        
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        }
+        
+        // This function will get called whenever the user changes the
+        // platform type, or the rating, eg. by changing the values of
+        // the combo boxes. When this function gets called,
+        // event.target.name will indicate which combo box is being
+        // changed. These target names are defined by us. We use
+        // 'platform' and 'rating' for our cases.
+        handleChange(event) {
+        this.setState({
+        [event.target.name]: event.target.value
+        });
+        }
+        
+        // This function will get called when the user clicks 'Update'.
+        // We would like to update our visualization with a vega-lite
+        // description hosted remotely. In this example, we start out
+        // with the simple visualization in Part 1 of Lab 7. However,
+        // this URL can be dynamically set based on the parameters.
+        handleSubmit(event) {
+        var spec = `http://localhost:8000/vis/${this.state.platform}`;
+        vegaEmbed('#vis', spec, {actions:false});
+        event.preventDefault();
+        }
+        
+        // This is the 'meat' of the component, where we render
+        // everything to the HTML page. It is pretty much an HTML
+        // form, but using React controlled inputs:
+        // https://reactjs.org/docs/forms.html
+        // When this form is submitted, aka. when the user clicks
+        // on the 'Update' button, the handleSubmit function will
+        // get called.
+        // For both combo boxes, the onChange event is bound to
+        // handleChange function. It will get call on any change
+        // of the values to update the state of the form
+        render() {
+        return (
+        <form onSubmit={this.handleSubmit}>
+            <label>
+                Type Selection &nbsp; <br />
+                Type &nbsp;
+                <select
+                    name="platform"
+                    value={this.state.platform}
+                    onChange={this.handleChange}>
+                    <option value="Free">Free</option>
+                    <option value="Limited Free">Limited Free</option>
+                </select>
+                &nbsp; &nbsp;
+            </label>
+            <input type="submit" value="Update" />
+        </form>
+        );
+        }
+        }
+        
+        //==================================================================
+        // The above only defines our form class. Now, we actually render
+        // the form to our page. React will call AppSelectingForm.render()
+        // whenever the AppSelectingForm is presented.
+        //==================================================================
+        ReactDOM.render(
+        <div>
+            <AppSelectingForm />
+        </div>,
+        document.getElementById('ui')
+        );
+    </script>
+    </body>
+</html>
